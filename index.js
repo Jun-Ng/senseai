@@ -20,14 +20,14 @@ async	function	checkNetworkPopUp(page) {
 		await page.click('#app > div > div.transaction-wrap.main-bg > section > div.popup-network-delay.popup-bg.text-color-title.van-popup.van-popup--center > div > div.btn.text-color-value.popup-bg');
 	
 	return ;
-}
+};
 
 class	puppeteerExchange {
 	constructor() {
 		const initiate_browser = async () => {
 			this.ready = false;
 			this.browser = false;
-			this.browser = await puppeteer.launch({headless: false});
+			this.browser = await puppeteer.launch({headless: true});
 			this.browser.on('disconnected', initiate_browser);
 			this.headers = null;
 			this.page = await this.browser.newPage();
@@ -41,11 +41,10 @@ class	puppeteerExchange {
 
 			// catch request headers
 			this.page.on('request', async request => {
-				if ((/^https:\/\/wapex\.com\/api\/app\/game\/option\/getAllVirtualOrderList*/).test(request.url())) {
 					if (request.headers()['authorization-user'])
 						this.headers = request.headers();
 				}
-			});
+			);
 
 			// logging in
 			await this.page.type("#retrieve-page > div > div.tab-components > div.item.input-bg-color > input", process.env.id);
@@ -72,7 +71,7 @@ class	puppeteerExchange {
 			if (process.env.mode === 'try')
 				await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.account-tabs-wrap.border-bottom > div.account-item.text-color-title');
 			else
-				await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.account-tabs-wrap.border-bottom > div.account-item.text-color-value.border-bottom-color.active');				
+				await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.account-tabs-wrap.border-bottom > div.account-item.text-color-value.border-bottom-color.active');
 
 			this.ready = true;
 		};
@@ -84,7 +83,7 @@ class	puppeteerExchange {
 
 	async	isReady() {
 		return new Promise(r => setInterval(() => {
-			this.ready && this.headers ? r() : null
+			return (this.ready && this.headers ? r() : null);
 		}, 50));
 	}
 
@@ -424,7 +423,7 @@ async function	handleAIUpdate(update, exchange) {
 			const	list = update.data.current.list;
 			const	list_last_index = list.length - 1;
 			const	latest_round = list[list_last_index];
-			const	latest_round_ts = latest_round.orderTime * 1000;
+			const	latest_round_ts = Date.now();
 			const	now = Date.now();
 
 			// if within 2s
@@ -463,6 +462,8 @@ async function	checkBalance(exchange) {
 
 	const	exchange = new puppeteerExchange();
 	await exchange.isReady();
+
+	console.log('EXCHANGE READY');
 
 	await checkBalance(exchange);
 	const	AISOCKET = await getIntervalSocket();
