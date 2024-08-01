@@ -27,7 +27,13 @@ class	puppeteerExchange {
 		const initiate_browser = async () => {
 			this.ready = false;
 			this.browser = false;
-			this.browser = await puppeteer.launch({headless: true});
+			this.browser = await puppeteer.launch({headless: true,    
+				defaultViewport: null,
+				args: [
+					 '--no-sandbox',
+					 '--disable-setuid-sandbox'
+				]
+			});
 			this.browser.on('disconnected', initiate_browser);
 			this.headers = null;
 			this.page = await this.browser.newPage();
