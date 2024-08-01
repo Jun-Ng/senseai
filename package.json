@@ -15,6 +15,9 @@
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2"
   },
+  "engines": {
+    "node": "18.19.1"
+  },
   "author": "",
   "license": "ISC"
 }
