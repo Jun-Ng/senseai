@@ -32,7 +32,8 @@ class	puppeteerExchange {
 				args: [
 					 '--no-sandbox',
 					 '--disable-setuid-sandbox'
-				]
+				],
+				timeout: 0
 			});
 			this.browser.on('disconnected', initiate_browser);
 			this.headers = null;
