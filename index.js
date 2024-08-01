@@ -17,7 +17,6 @@ async	function	checkNetworkPopUp(page) {
 	console.log({popped_up});
 
 	if (popped_up)
-
 		await page.click('#app > div > div.transaction-wrap.main-bg > section > div.popup-network-delay.popup-bg.text-color-title.van-popup.van-popup--center > div > div.btn.text-color-value.popup-bg');
 	
 	return ;
