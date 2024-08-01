@@ -38,6 +38,7 @@ class	puppeteerExchange {
 			this.browser.on('disconnected', initiate_browser);
 			this.headers = null;
 			this.page = await this.browser.newPage();
+			this.page.setDefaultNavigationTimeout(0); 
 
 			// navigate to login page
 			await Promise.all([
