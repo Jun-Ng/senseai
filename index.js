@@ -24,8 +24,6 @@ async	function	checkNetworkPopUp(page) {
 	return ;
 };
 
-console.log(join(__dirname, '/chrome/'));
-
 class	puppeteerExchange {
 	constructor() {
 		const initiate_browser = async () => {
@@ -33,7 +31,7 @@ class	puppeteerExchange {
 			this.browser = false;
 			this.browser = await puppeteer.launch({
 				headless: true,
-				executablePath: join(__dirname, 'chrome/mac_arm-127.0.6533.72/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
+				executablePath: process.env.chrome_path,
 				defaultViewport: null,
 				args: [
 					 '--no-sandbox',
