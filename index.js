@@ -28,7 +28,7 @@ class	puppeteerExchange {
 			this.ready = false;
 			this.browser = false;
 			this.browser = await puppeteer.launch({
-				headless: 'shell',
+				headless: false,
 				executablePath: process.env.chrome_path,
 				defaultViewport: null,
 				args: [
@@ -49,18 +49,12 @@ class	puppeteerExchange {
 			]);
 			console.log('loaded');
 
-			// try {
-			// 	const data = await this.page.evaluate(() => document.querySelector('*').outerHTML);
-			// 	console.log(data);
-			// 	process.exit();
-			// } catch (e) {
-			// 	console.error(e);
-			// };
-
 			// catch request headers
 			this.page.on('request', async request => {
-					if (request.headers()['authorization-user'])
+					if (request.headers()['authorization-user']) {
 						this.headers = request.headers();
+						console.log(this.headers);
+					}
 				}
 			);
 
@@ -75,13 +69,6 @@ class	puppeteerExchange {
 			]);
 
 			console.log('logged in');
-			// try {
-			// 	const data = await this.page.evaluate(() => document.querySelector('*').outerHTML);
-			// 	console.log(data);
-			// 	process.exit();
-			// } catch (e) {
-			// 	console.error(e);
-			// };
 
 			// wait a little
 			await new Promise(r => setTimeout(r, 1000 * (Math.random() * 5)));
@@ -103,14 +90,6 @@ class	puppeteerExchange {
 				await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.account-tabs-wrap.border-bottom > div.account-item.text-color-value.border-bottom-color.active');
 
 			this.ready = true;
-
-			try {
-				const data = await this.page.evaluate(() => document.querySelector('*').outerHTML);
-				console.log(data);
-				process.exit();
-			} catch (e) {
-				console.error(e);
-			};
 		};
 
 		(async () => {
@@ -130,20 +109,25 @@ class	puppeteerExchange {
 
 		try {
 			this.processingOrder = true;
+			const r = await axiosWrapper({
+				url: 'https://wapex.com/api/app/game/option/purchase',
+				method: 'post',
+				data:
+					{
+						"cycle": 30,
+						"direction": "1",
+						"orderAmount": amount.toString(),
+						"contract": "BTC/USDT",
+						"currencyId": 7,
+						"ts": Date.now(),
+						"accountType": process.env.try ? 8 : 3,
+						"transactionType": "1"
+					},
+				headers: this.headers
+			});
+			await new Promise(r => setTimeout(r, 1234));
 
-			// remove previous input amount
-			// unable to use $eval here to directly modify input.value for some reason
-			await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.delete-img');
-			// input amount
-			await this.page.type('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.input.van-cell.van-field > div > div > input', amount.toString());
-
-			await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.btn-wrap > div.btn.text-color-white.bg-color-green');
-
-			await checkNetworkPopUp(this.page);
-
-			// wait for success pop-up to go away
-			await new Promise(r => setTimeout(r, 2000));
-
+			console.log(r);
 			this.processingOrder = false;
 		}	catch (e) {
 			console.error(e);
@@ -159,18 +143,25 @@ class	puppeteerExchange {
 		try {
 			this.processingOrder = true;
 
-			// remove previous input amount
-			// unable to use $eval here to directly modify input.value for some reason
-			await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.delete-img');
-			// input amount
-			await this.page.type('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.input.van-cell.van-field > div > div > input', amount.toString());
+			const r = await axiosWrapper({
+				url: 'https://wapex.com/api/app/game/option/purchase',
+				method: 'post',
+				data:
+					{
+						"cycle": 30,
+						"direction": "2",
+						"orderAmount": amount.toString(),
+						"contract": "BTC/USDT",
+						"currencyId": 7,
+						"ts": Date.now(),
+						"accountType": process.env.try ? 8 : 3,
+						"transactionType": "1"
+					},
+				headers: this.headers
+			});
+			console.log(r);
 
-			await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.btn-wrap > div.btn.text-color-white.bg-color-red');
-
-			await checkNetworkPopUp(this.page);
-
-			// wait for success pop-up to go away
-			await new Promise(r => setTimeout(r, 2000));
+			await new Promise(r => setTimeout(r, 1234));
 
 			this.processingOrder = false;
 		} catch (e) {
@@ -344,6 +335,7 @@ async function	getIntervalSocket() {
 	return (eventEmitter);
 };
 
+let	last_ts = null;
 let	last_update = null;
 let	last_order_id = null;
 let	locked_ai_update = false;
@@ -367,12 +359,12 @@ function deepEqual(obj1, obj2) {
 	return true;
 }
 
-async function	handleAIUpdate(update, exchange) {
-	/*
-		//  no rounds on going
-		{ code: 0, data: { current: null }, msg: '执行成功' }
 
-		// 
+
+async function	handleAIUpdate(update, exchange) {
+
+	/*
+		{ code: 0, data: { current: null }, msg: '执行成功' }
 		{
 			code: 0,
 			data: {
@@ -447,9 +439,10 @@ async function	handleAIUpdate(update, exchange) {
 	locked_ai_update = true;
 	try {
 		
-		// if (deepEqual(last_update, update))
-		// 	return ;
-		// last_update = update;
+		last_ts = Date.now();
+		if (deepEqual(last_update, update))
+			return ;
+		last_update = update;
 		console.dir(update, {depth: null, maxArrayLength: null});
 
 		// if no rounds ongoing
@@ -466,6 +459,7 @@ async function	handleAIUpdate(update, exchange) {
 			// if within 2s
 			if (latest_round.orderId !== last_order_id 
 				&& (now - latest_round_ts) < CONFIG.MAX_ORDER_TIME_DELAY) {
+					await new Promise(r => setTimeout(r, 1000 * Math.random() * 1))
 					if (latest_round.direction === '1')
 						await exchange.call(CONFIG.ORDER_AMOUNT);
 					else
@@ -495,15 +489,24 @@ async function	checkBalance(exchange) {
 	return ;
 };
 
+async function	lastUpdateChecker() {	
+	console.log({last_ts});
+	if (last_ts !== null && (Date.now() - last_ts > 1000 * 30))
+		process.exit(1);
+	setTimeout(lastUpdateChecker, 1000 * 5);
+	return ;
+};
+
 (async () => {
 
 	const	exchange = new puppeteerExchange();
 	await exchange.isReady();
-
 	console.log('EXCHANGE READY');
+	
 
 	await checkBalance(exchange);
 	const	AISOCKET = await getIntervalSocket();
+	await lastUpdateChecker();
 	AISOCKET.on('update', update => handleAIUpdate(update, exchange));
 
 	return ;
