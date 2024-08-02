@@ -66,6 +66,8 @@ class	puppeteerExchange {
 				}
 			);
 
+			console.log('logging in');
+
 			// logging in
 			await this.page.type("#retrieve-page > div > div.tab-components > div.item.input-bg-color > input", process.env.id);
 			await this.page.type("#retrieve-page > div > div.password-component > div > div.input > form > input", process.env.pw);
@@ -73,6 +75,8 @@ class	puppeteerExchange {
 				this.page.waitForNavigation(),
 				this.page.click('#retrieve-page > div > div.long-button-component.text-color-white.login-button.long-button-active')
 			]);
+
+			console.log('logged in');
 
 
 			try {
