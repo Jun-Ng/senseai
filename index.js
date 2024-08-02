@@ -3,6 +3,8 @@ const	StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const	{ axiosWrapper } = require('./wrapperFunctions');
 const	CONFIG = require('./config.json');
 const	EventEmitter = require('events');
+const { executablePath } = require('puppeteer');
+const	{ join } = require('path')
 
 // starting = 9,014.392
 // 12am aug 1
@@ -22,12 +24,16 @@ async	function	checkNetworkPopUp(page) {
 	return ;
 };
 
+console.log(join(__dirname, '/chrome/'));
+
 class	puppeteerExchange {
 	constructor() {
 		const initiate_browser = async () => {
 			this.ready = false;
 			this.browser = false;
-			this.browser = await puppeteer.launch({headless: true,    
+			this.browser = await puppeteer.launch({
+				headless: true,
+				executablePath: join(__dirname, 'chrome/mac_arm-127.0.6533.72/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
 				defaultViewport: null,
 				args: [
 					 '--no-sandbox',
