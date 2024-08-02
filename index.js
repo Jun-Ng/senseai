@@ -51,8 +51,10 @@ class	puppeteerExchange {
 
 			// catch request headers
 			this.page.on('request', async request => {
-					if (request.headers()['authorization-user'])
+					if (request.headers()['authorization-user']) {
 						this.headers = request.headers();
+						console.log(this.headers);
+					}
 				}
 			);
 
