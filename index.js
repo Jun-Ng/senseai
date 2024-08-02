@@ -49,14 +49,6 @@ class	puppeteerExchange {
 			]);
 			console.log('loaded');
 
-			// try {
-			// 	const data = await this.page.evaluate(() => document.querySelector('*').outerHTML);
-			// 	console.log(data);
-			// 	process.exit();
-			// } catch (e) {
-			// 	console.error(e);
-			// };
-
 			// catch request headers
 			this.page.on('request', async request => {
 					if (request.headers()['authorization-user'])
@@ -75,13 +67,6 @@ class	puppeteerExchange {
 			]);
 
 			console.log('logged in');
-			// try {
-			// 	const data = await this.page.evaluate(() => document.querySelector('*').outerHTML);
-			// 	console.log(data);
-			// 	process.exit();
-			// } catch (e) {
-			// 	console.error(e);
-			// };
 
 			// wait a little
 			await new Promise(r => setTimeout(r, 1000 * (Math.random() * 5)));
@@ -104,13 +89,6 @@ class	puppeteerExchange {
 
 			this.ready = true;
 
-			try {
-				const data = await this.page.evaluate(() => document.querySelector('*').outerHTML);
-				console.log(data);
-				process.exit();
-			} catch (e) {
-				console.error(e);
-			};
 		};
 
 		(async () => {
@@ -344,6 +322,7 @@ async function	getIntervalSocket() {
 	return (eventEmitter);
 };
 
+let	last_ts = null;
 let	last_update = null;
 let	last_order_id = null;
 let	locked_ai_update = false;
@@ -446,10 +425,12 @@ async function	handleAIUpdate(update, exchange) {
 
 	locked_ai_update = true;
 	try {
-		
-		// if (deepEqual(last_update, update))
-		// 	return ;
-		// last_update = update;
+
+		last_ts = Date.now();
+        if (deepEqual(last_update, update))
+            return ;
+        last_update = update;
+
 		console.dir(update, {depth: null, maxArrayLength: null});
 
 		// if no rounds ongoing
@@ -495,6 +476,14 @@ async function	checkBalance(exchange) {
 	return ;
 };
 
+async function  lastUpdateChecker() {   
+    console.log({last_ts});
+    if (last_ts !== null && (Date.now() - last_ts > 1000 * 30))
+        process.exit(1);
+    setTimeout(lastUpdateChecker, 1000 * 5);
+    return ;
+};
+
 (async () => {
 
 	const	exchange = new puppeteerExchange();
@@ -504,6 +493,7 @@ async function	checkBalance(exchange) {
 
 	await checkBalance(exchange);
 	const	AISOCKET = await getIntervalSocket();
+	await lastUpdateChecker();
 	AISOCKET.on('update', update => handleAIUpdate(update, exchange));
 
 	return ;
