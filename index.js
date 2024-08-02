@@ -46,6 +46,9 @@ class	puppeteerExchange {
 			await Promise.all([
 				this.page.waitForNavigation(),
 				this.page.goto('https://www.wapex.com/#/login?routerType=2'),
+				this.page.screenshot({
+					path: 'x.png'
+				})
 			]);
 			console.log('loaded');
 
