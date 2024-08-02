@@ -52,9 +52,11 @@ class	puppeteerExchange {
 			console.log('loaded');
 
 			try {
-				console.log(await this.page.contents());
+				const data = await this.page.evaluate(() => document.querySelector('*').outerHTML);
+				console.log(data);
 				process.exit();
 			} catch (e) {
+				console.error(e);
 			};
 
 			// catch request headers
