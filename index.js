@@ -3,8 +3,6 @@ const	StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const	{ axiosWrapper } = require('./wrapperFunctions');
 const	CONFIG = require('./config.json');
 const	EventEmitter = require('events');
-const { executablePath } = require('puppeteer');
-const	{ join } = require('path')
 
 // starting = 9,014.392
 // 12am aug 1
@@ -30,7 +28,7 @@ class	puppeteerExchange {
 			this.ready = false;
 			this.browser = false;
 			this.browser = await puppeteer.launch({
-				headless: true,
+				headless: 'shell',
 				executablePath: process.env.chrome_path,
 				defaultViewport: null,
 				args: [
@@ -77,13 +75,13 @@ class	puppeteerExchange {
 			]);
 
 			console.log('logged in');
-			try {
-				const data = await this.page.evaluate(() => document.querySelector('*').outerHTML);
-				console.log(data);
-				process.exit();
-			} catch (e) {
-				console.error(e);
-			};
+			// try {
+			// 	const data = await this.page.evaluate(() => document.querySelector('*').outerHTML);
+			// 	console.log(data);
+			// 	process.exit();
+			// } catch (e) {
+			// 	console.error(e);
+			// };
 
 			// wait a little
 			await new Promise(r => setTimeout(r, 1000 * (Math.random() * 5)));
