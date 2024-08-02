@@ -48,9 +48,14 @@ class	puppeteerExchange {
 			await Promise.all([
 				this.page.waitForNavigation(),
 				this.page.goto('https://www.wapex.com/#/login?routerType=2'),
-				console.log(this.page.content())
 			]);
 			console.log('loaded');
+
+			try {
+				console.log(await this.page.contents());
+				process.exit();
+			} catch (e) {
+			};
 
 			// catch request headers
 			this.page.on('request', async request => {
