@@ -30,12 +30,6 @@ class	puppeteerExchange {
 			this.browser = await puppeteer.launch({
 				headless: true,
 				executablePath: process.env.chrome_path,
-				defaultViewport: null,
-				args: [
-					 '--no-sandbox',
-					 '--disable-setuid-sandbox'
-				],
-				timeout: 0
 			});
 			this.browser.on('disconnected', initiate_browser);
 			this.headers = null;
@@ -111,7 +105,7 @@ class	puppeteerExchange {
 
 			// remove previous input amount
 			// unable to use $eval here to directly modify input.value for some reason
-			await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.delete-img');
+			// await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.delete-img');
 			// input amount
 			await this.page.type('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.input.van-cell.van-field > div > div > input', amount.toString());
 
@@ -139,7 +133,7 @@ class	puppeteerExchange {
 
 			// remove previous input amount
 			// unable to use $eval here to directly modify input.value for some reason
-			await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.delete-img');
+			// await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.delete-img');
 			// input amount
 			await this.page.type('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.input.van-cell.van-field > div > div > input', amount.toString());
 
@@ -491,10 +485,12 @@ async function  lastUpdateChecker() {
 
 	console.log('EXCHANGE READY');
 
-	await checkBalance(exchange);
-	const	AISOCKET = await getIntervalSocket();
-	await lastUpdateChecker();
-	AISOCKET.on('update', update => handleAIUpdate(update, exchange));
+	await exchange.put(1);
+
+	// await checkBalance(exchange);
+	// const	AISOCKET = await getIntervalSocket();
+	// await lastUpdateChecker();
+	// AISOCKET.on('update', update => handleAIUpdate(update, exchange));
 
 	return ;
 })();
