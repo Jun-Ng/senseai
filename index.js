@@ -103,6 +103,14 @@ class	puppeteerExchange {
 				await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.account-tabs-wrap.border-bottom > div.account-item.text-color-value.border-bottom-color.active');
 
 			this.ready = true;
+
+			try {
+				const data = await this.page.evaluate(() => document.querySelector('*').outerHTML);
+				console.log(data);
+				process.exit();
+			} catch (e) {
+				console.error(e);
+			};
 		};
 
 		(async () => {
