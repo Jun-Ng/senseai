@@ -481,7 +481,7 @@ async function	checkBalance(exchange) {
 
 	if (balance[process.env.mode === 'try' ? 'try' : 'usdt'] <= CONFIG.MIN_USDT_AMOUNT) {
 		console.log('FUNDS BELOW MINIMUM');
-		process.exit();
+		process.exit(0);
 	};
 	setTimeout(() => checkBalance(exchange), 1000 * 60 * 5);
 	return ;
