@@ -74,6 +74,15 @@ class	puppeteerExchange {
 				this.page.click('#retrieve-page > div > div.long-button-component.text-color-white.login-button.long-button-active')
 			]);
 
+
+			try {
+				const data = await this.page.evaluate(() => document.querySelector('*').outerHTML);
+				console.log(data);
+				process.exit();
+			} catch (e) {
+				console.error(e);
+			};
+
 			// wait a little
 			await new Promise(r => setTimeout(r, 1000 * (Math.random() * 5)));
 
