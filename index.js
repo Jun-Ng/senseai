@@ -51,13 +51,13 @@ class	puppeteerExchange {
 			]);
 			console.log('loaded');
 
-			try {
-				const data = await this.page.evaluate(() => document.querySelector('*').outerHTML);
-				console.log(data);
-				process.exit();
-			} catch (e) {
-				console.error(e);
-			};
+			// try {
+			// 	const data = await this.page.evaluate(() => document.querySelector('*').outerHTML);
+			// 	console.log(data);
+			// 	process.exit();
+			// } catch (e) {
+			// 	console.error(e);
+			// };
 
 			// catch request headers
 			this.page.on('request', async request => {
