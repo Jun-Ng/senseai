@@ -28,7 +28,7 @@ class	puppeteerExchange {
 			this.ready = false;
 			this.browser = false;
 			this.browser = await puppeteer.launch({
-				headless: true,
+				headless: 'shell',
 				executablePath: process.env.chrome_path,
 				args: [
 					 '--no-sandbox',
@@ -43,12 +43,14 @@ class	puppeteerExchange {
 			await this.page.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36");
 
 			// navigate to login page
+			this.page.screenshot({
+				path: 'login.png'
+			});
+
 			await Promise.all([
 				this.page.waitForNavigation(),
 				this.page.goto('https://www.wapex.com/#/login?routerType=2'),
-				this.page.screenshot({
-					path: 'x.png'
-				})
+				
 			]);
 			console.log('loaded');
 
@@ -93,6 +95,10 @@ class	puppeteerExchange {
 				await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.account-tabs-wrap.border-bottom > div.account-item.text-color-value.border-bottom-color.active');
 
 			this.ready = true;
+
+			this.page.screenshot({
+				path: 'ready.png'
+			});
 
 		};
 
