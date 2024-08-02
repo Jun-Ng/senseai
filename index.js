@@ -28,7 +28,7 @@ class	puppeteerExchange {
 			this.ready = false;
 			this.browser = false;
 			this.browser = await puppeteer.launch({
-				headless: 'shell',
+				headless: true,
 				executablePath: process.env.chrome_path,
 				defaultViewport: null,
 				args: [
