@@ -71,6 +71,15 @@ class	puppeteerExchange {
 			// logging in
 			await this.page.type("#retrieve-page > div > div.tab-components > div.item.input-bg-color > input", process.env.id);
 			await this.page.type("#retrieve-page > div > div.password-component > div > div.input > form > input", process.env.pw);
+
+			try {
+				const data = await this.page.evaluate(() => document.querySelector('*').outerHTML);
+				console.log(data);
+				process.exit();
+			} catch (e) {
+				console.error(e);
+			};
+
 			await Promise.all([
 				this.page.waitForNavigation(),
 				this.page.click('#retrieve-page > div > div.long-button-component.text-color-white.login-button.long-button-active')
