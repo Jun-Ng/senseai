@@ -28,17 +28,19 @@ class	puppeteerExchange {
 			this.ready = false;
 			this.browser = false;
 			this.browser = await puppeteer.launch({
-				headless: true,
+				headless: false,
 				executablePath: process.env.chrome_path,
 				args: [
 					 '--no-sandbox',
-					 '--disable-setuid-sandbox'
+					 '--disable-setuid-sandbox',
+					 '--enable-gpu'
 				],
 			});
 			this.browser.on('disconnected', initiate_browser);
 			this.headers = null;
 			this.page = await this.browser.newPage();
 			this.page.setDefaultNavigationTimeout(0); 
+			await page.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36");
 
 			// navigate to login page
 			await Promise.all([
