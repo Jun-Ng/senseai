@@ -456,7 +456,7 @@ async function	handleAIUpdate(update, exchange) {
 			const	list = update.data.current.list;
 			const	list_last_index = list.length - 1;
 			const	latest_round = list[list_last_index];
-			const	latest_round_ts = Date.now();
+			const	latest_round_ts = latest_round.orderTime * 1000;
 			const	now = Date.now();
 
 			// if within 2s
