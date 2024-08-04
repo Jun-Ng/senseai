@@ -406,6 +406,7 @@ class	puppeteerExchange {
 			} finally {
 				// this.pastOrdersRoutine();
 				this.blockTrades = false;
+				this.pastOrdersRoutine();
 				return ;
 			};
 		}, nextRunIn);
