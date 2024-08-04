@@ -148,3 +148,5 @@ dist
 *.csv
 
 .DS_Store
+
+.png

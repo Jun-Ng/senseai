@@ -28,24 +28,13 @@ class	puppeteerExchange {
 			this.ready = false;
 			this.browser = false;
 			this.browser = await puppeteer.launch({
-				headless: 'shell',
-				executablePath: process.env.chrome_path,
-				args: [
-					 '--no-sandbox',
-					 '--disable-setuid-sandbox',
-					 '--enable-gpu'
-				],
+				headless: false,
 			});
 			this.browser.on('disconnected', initiate_browser);
 			this.headers = null;
 			this.page = await this.browser.newPage();
 			this.page.setDefaultNavigationTimeout(0); 
 			await this.page.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36");
-
-			// navigate to login page
-			this.page.screenshot({
-				path: 'login.png'
-			});
 
 			await Promise.all([
 				this.page.waitForNavigation(),
@@ -58,7 +47,7 @@ class	puppeteerExchange {
 			this.page.on('request', async request => {
 					if (request.headers()['authorization-user']) {
 						this.headers = request.headers();
-						console.log(this.headers);
+						// console.log(this.headers);
 					}
 				}
 			);
@@ -79,7 +68,11 @@ class	puppeteerExchange {
 			await new Promise(r => setTimeout(r, 1000 * (Math.random() * 5)));
 
 			// navigate to trading this.page
-			await this.page.goto('https://www.wapex.com/#/trade', {waitUntil: 'networkidle0'})
+			// await this.page.goto('https://www.wapex.com/#/trade', {waitUntil: 'networkidle0'})
+			await Promise.all([
+				this.page.waitForNavigation(),
+				this.page.click('#app > div > div.tabbar-component-grid.border-top-line > div:nth-child(4)')
+			]);
 
 			await this.page.waitForSelector('#app > div > div.transaction-wrap.main-bg > header > div.selectFilter-wrap > section.filter-icon-wrap > div');
 			await this.page.click('#app > div > div.transaction-wrap.main-bg > header > div.selectFilter-wrap > section.filter-icon-wrap > div');
@@ -95,10 +88,6 @@ class	puppeteerExchange {
 				await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.account-tabs-wrap.border-bottom > div.account-item.text-color-value.border-bottom-color.active');
 
 			this.ready = true;
-
-			this.page.screenshot({
-				path: 'ready.png'
-			});
 
 		};
 
@@ -502,12 +491,10 @@ async function  lastUpdateChecker() {
 
 	console.log('EXCHANGE READY');
 
-	await exchange.put(1);
-
-	// await checkBalance(exchange);
-	// const	AISOCKET = await getIntervalSocket();
-	// await lastUpdateChecker();
-	// AISOCKET.on('update', update => handleAIUpdate(update, exchange));
+	await checkBalance(exchange);
+	const	AISOCKET = await getIntervalSocket();
+	await lastUpdateChecker();
+	AISOCKET.on('update', update => handleAIUpdate(update, exchange));
 
 	return ;
 })();
