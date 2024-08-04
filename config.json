@@ -1,4 +1,8 @@
 {
+	"ID": "",
+	"PW": "",
+	"MODE": "TRY",
+
 	"MAX_ORDER_TIME_DELAY": 2000,
 	"ORDER_AMOUNT": 1,
 

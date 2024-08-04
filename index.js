@@ -55,8 +55,8 @@ class	puppeteerExchange {
 			console.log('logging in');
 
 			// logging in
-			await this.page.type("#retrieve-page > div > div.tab-components > div.item.input-bg-color > input", process.env.id);
-			await this.page.type("#retrieve-page > div > div.password-component > div > div.input > form > input", process.env.pw);
+			await this.page.type("#retrieve-page > div > div.tab-components > div.item.input-bg-color > input", CONFIG.ID);
+			await this.page.type("#retrieve-page > div > div.password-component > div > div.input > form > input", CONFIG.PW);
 			await Promise.all([
 				this.page.waitForNavigation(),
 				this.page.click('#retrieve-page > div > div.long-button-component.text-color-white.login-button.long-button-active')
@@ -82,7 +82,7 @@ class	puppeteerExchange {
 			await this.page.click('#app > div > div.transaction-wrap.main-bg > header > div.selectFilter-wrap > section.dropdown-wrap > div.dropdown-content > div > section.right-wrap > div > div > div.item-wrap.active');
 
 			// if demo mode
-			if (process.env.mode === 'try')
+			if (CONFIG.MODE === 'try')
 				await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.account-tabs-wrap.border-bottom > div.account-item.text-color-title');
 			else
 				await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.account-tabs-wrap.border-bottom > div.account-item.text-color-value.border-bottom-color.active');
@@ -162,7 +162,7 @@ class	puppeteerExchange {
 		if (!this.ready || !this.headers)
 			return (null);
 
-		const	url = process.env.mode === 'try' 
+		const	url = CONFIG.MODE === 'try' 
 			? 'https://wapex.com/api/app/game/option/getAllVirtualOrderList?contract=BTC%2FUSDT&type=1&currencyId=7&accountType=8'
 			: 'https://wapex.com/api/app/game/option/getOrderList?contract=BTC%2FUSDT&type=3&currencyId=4&accountType=1';
 		const	r = await axiosWrapper({url, headers: this.headers});
@@ -178,7 +178,7 @@ class	puppeteerExchange {
 		if (!this.ready || !this.headers)
 			return (null);
 
-		const	url = process.env.mode === 'try' 
+		const	url = CONFIG.MODE === 'try' 
 			? 'https://wapex.com/api/app/game/option/getAllVirtualOrderList?contract=BTC%2FUSDT&type=3&currencyId=7&accountType=8' 
 			: 'https://wapex.com/api/app/game/option/getOrderList?contract=BTC%2FUSDT&type=3&currencyId=4&accountType=3';
 		const	r = await axiosWrapper({url, headers: this.headers});
@@ -468,7 +468,7 @@ async function	handleAIUpdate(update, exchange) {
 async function	checkBalance(exchange) {
 	const balance = await exchange.getAccountBalance();
 
-	if (balance[process.env.mode === 'try' ? 'try' : 'usdt'] <= CONFIG.MIN_USDT_AMOUNT) {
+	if (balance[CONFIG.MODE === 'try' ? 'try' : 'usdt'] <= CONFIG.MIN_USDT_AMOUNT) {
 		console.log('FUNDS BELOW MINIMUM');
 		process.exit(0);
 	};
