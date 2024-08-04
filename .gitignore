@@ -153,3 +153,5 @@ dist
 
 config.json
 package-lock.json
+
+orderHistory
