@@ -34,8 +34,6 @@ class	puppeteerExchange {
 			this.headers = null;
 			this.page = await this.browser.newPage();
 			this.page.setDefaultNavigationTimeout(0); 
-			await this.page.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36");
-
 			await Promise.all([
 				this.page.waitForNavigation(),
 				this.page.goto('https://www.wapex.com/#/login?routerType=2'),
@@ -164,7 +162,9 @@ class	puppeteerExchange {
 
 		const	url = CONFIG.MODE === 'try' 
 			? 'https://wapex.com/api/app/game/option/getAllVirtualOrderList?contract=BTC%2FUSDT&type=1&currencyId=7&accountType=8'
-			: 'https://wapex.com/api/app/game/option/getOrderList?contract=BTC%2FUSDT&type=3&currencyId=4&accountType=1';
+			: 'https://wapex.com/api/app/game/option/getOrderList?contract=BTC%2FUSDT&type=1&currencyId=4&accountType=3';
+			
+
 		const	r = await axiosWrapper({url, headers: this.headers});
 
 		if (r.msg !== 'success')
@@ -181,6 +181,7 @@ class	puppeteerExchange {
 		const	url = CONFIG.MODE === 'try' 
 			? 'https://wapex.com/api/app/game/option/getAllVirtualOrderList?contract=BTC%2FUSDT&type=3&currencyId=7&accountType=8' 
 			: 'https://wapex.com/api/app/game/option/getOrderList?contract=BTC%2FUSDT&type=3&currencyId=4&accountType=3';
+
 		const	r = await axiosWrapper({url, headers: this.headers});
 
 		if (r.msg !== 'success')
