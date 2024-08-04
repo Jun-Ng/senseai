@@ -3,9 +3,9 @@ const	StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const	{ axiosWrapper } = require('./wrapperFunctions');
 const	CONFIG = require('./config.json');
 const	EventEmitter = require('events');
+const	fs = require('fs');
+const	path = require('path');
 
-// starting = 9,014.392
-// 12am aug 1
 
 puppeteer.use(StealthPlugin());
 require('dotenv').config();
@@ -22,9 +22,37 @@ async	function	checkNetworkPopUp(page) {
 	return ;
 };
 
+function jsonToCsv(jsonData) {
+    let csv = '';
+    
+    // Extract headers
+    const headers = Object.keys(jsonData[0]);
+    csv += headers.join(',') + '\n';
+    
+    // Extract values
+    jsonData.forEach(obj => {
+        const values = headers.map(header => obj[header]);
+        csv += values.join(',') + '\n';
+    });
+    
+    return csv;
+};
+function writeFileWithDirs(filePath, data) {
+	// Get the directory name from the file path
+	const dir = path.dirname(filePath);
+  
+	// Create the directory if it doesn't exist
+	fs.mkdirSync(dir, { recursive: true });
+  
+	// Write the file
+	fs.writeFileSync(filePath, data);
+};
+
 class	puppeteerExchange {
 	constructor() {
 		const initiate_browser = async () => {
+			this.blockTrades = false;
+			this.processingOrder = false;
 			this.ready = false;
 			this.browser = false;
 			this.browser = await puppeteer.launch({
@@ -42,10 +70,8 @@ class	puppeteerExchange {
 
 			// catch request headers
 			this.page.on('request', async request => {
-					if (request.headers()['authorization-user']) {
+					if (request.headers()['authorization-user'])
 						this.headers = request.headers();
-						// console.log(this.headers);
-					}
 				}
 			);
 
@@ -100,7 +126,7 @@ class	puppeteerExchange {
 			});
 
 			this.ready = true;
-
+			console.log('ARRIVED AT TRADING PAGE');
 		};
 
 		(async () => {
@@ -115,7 +141,7 @@ class	puppeteerExchange {
 	}
 
 	async	call(amount) {
-		if (!this.ready || await this.page.url() !== 'https://www.wapex.com/#/trade')
+		if (!this.ready || await this.page.url() !== 'https://www.wapex.com/#/trade' || this.blockTrades || this.processingOrder)
 			return	(false);
 
 		try {
@@ -143,8 +169,9 @@ class	puppeteerExchange {
 	};
 
 	async	put(amount) {
-		if (!this.ready || await this.page.url() !== 'https://www.wapex.com/#/trade')
-			return (null);
+		console.log(this.ready, this.blockTrades, this.processingOrder);
+		if (!this.ready || await this.page.url() !== 'https://www.wapex.com/#/trade' || this.blockTrades || this.processingOrder)
+			return (false);
 
 		try {
 			this.processingOrder = true;
@@ -321,6 +348,70 @@ class	puppeteerExchange {
 
 		return (balance);
 	};
+
+	async	pastOrdersRoutine() {
+		const	now = new Date();
+		const	gmt8Date = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Singapore"}));
+		gmt8Date.setHours(24, 0, 30, 0);
+		// ms
+		const	nextRunTime = gmt8Date.getTime();
+		const	nextRunIn = nextRunTime - Date.now();
+	
+		setTimeout(async () => {
+			this.blockTrades = true;
+
+			await new Promise(r => setTimeout(r, 1000 * 30));
+			try {
+				const startOfYtd = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Singapore"}));
+				startOfYtd.setDate(startOfYtd.getDate() - 1);
+				startOfYtd.setHours(0, 0, 0, 0);
+
+				const	fromTs = startOfYtd.getTime();
+				const	endTs = nextRunTime - (1000 * 30);
+
+				console.log({fromTs, endTs});
+
+				const	ytdPastOrders = (await this.pastOrders())
+					.filter(obj => obj.ts >= fromTs && obj.ts < endTs)
+					.map(obj => {
+						return (
+							{
+								time: new Date(obj.ts).toLocaleString("en-GB", {timeZone: "Asia/Singapore"}).toString().replace(',' , ''),
+								orderId: obj.orderId,
+								direction: obj.direction === 1 ? 'call' : 'put',
+								orderAmount: obj.orderAmount,
+								paymentPrice: obj.paymentPrice,
+								settlementPrice: obj.settlementPrice,
+								orderProfit: obj.orderProfit,
+							}
+						);
+					});
+
+				const	jsonData = jsonToCsv(ytdPastOrders);
+
+				console.log(ytdPastOrders);
+				console.log(jsonData);
+				
+				let	date = new Date(new Date(fromTs).toLocaleString("en-US", {timeZone: "Asia/Singapore"}));
+				let	y = date.getFullYear();
+				let	m = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-based, so add 1
+				let	d = date.getDate().toString().padStart(2, '0');
+
+				const	filename = `${y}_${m}_${d}.csv`;
+
+				writeFileWithDirs(`./orderHistory/${filename}`, jsonData);
+				
+			} catch (e) {
+				console.error(e);
+			} finally {
+				// this.pastOrdersRoutine();
+				this.blockTrades = false;
+				return ;
+			};
+		}, nextRunIn);
+
+		console.log({nextRunIn});
+	};
 };
 
 async function	getIntervalSocket() {
@@ -366,7 +457,6 @@ async function	handleAIUpdate(update, exchange) {
 		//  no rounds on going
 		{ code: 0, data: { current: null }, msg: '执行成功' }
 
-		// 
 		{
 			code: 0,
 			data: {
@@ -502,21 +592,17 @@ async function  lastUpdateChecker() {
 (async () => {
 
 	const	exchange = new puppeteerExchange();
+
 	await exchange.isReady();
-
-	// while (1) {
-	// 	await exchange.call(1);
-	// 	await exchange.put(1);
-	// }
-
 	console.log('EXCHANGE READY');
 
+	await exchange.pastOrdersRoutine();
 	await checkBalance(exchange);
-	const	AISOCKET = await getIntervalSocket();
 	await lastUpdateChecker();
+
+	const	AISOCKET = await getIntervalSocket();
 	AISOCKET.on('update', update => handleAIUpdate(update, exchange));
 
-	return ;
 })();
 
 /*
@@ -524,9 +610,6 @@ async function  lastUpdateChecker() {
 
 	open orders
 		direction: '1' = call, '2' = put
-
-
-	
 
 	"currencyConfig": [
 		{
