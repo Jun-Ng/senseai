@@ -37,7 +37,6 @@ class	puppeteerExchange {
 			await Promise.all([
 				this.page.waitForNavigation(),
 				this.page.goto('https://www.wapex.com/#/login?routerType=2'),
-				
 			]);
 			console.log('loaded');
 
@@ -85,6 +84,21 @@ class	puppeteerExchange {
 			// else
 			// 	await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.account-tabs-wrap.border-bottom > div.account-item.text-color-value.border-bottom-color.active');
 
+			this.page.on("framenavigated", async frame => {
+				const url = frame.url(); // the new url
+
+				if (url !== 'https://www.wapex.com/#/trade')
+					await this.page.goto('https://www.wapex.com/#/trade', {waitUntil: 'networkidle0'})
+
+				await this.page.evaluate(() => {
+					window.scrollTo(0, document.body.scrollHeight);
+				});
+			});
+
+			await this.page.evaluate(() => {
+				window.scrollTo(0, document.body.scrollHeight);
+			});
+
 			this.ready = true;
 
 		};
@@ -101,7 +115,7 @@ class	puppeteerExchange {
 	}
 
 	async	call(amount) {
-		if (!this.ready)
+		if (!this.ready || await this.page.url() !== 'https://www.wapex.com/#/trade')
 			return	(false);
 
 		try {
@@ -109,7 +123,7 @@ class	puppeteerExchange {
 
 			// remove previous input amount
 			// unable to use $eval here to directly modify input.value for some reason
-			// await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.delete-img');
+			await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.delete-img');
 			// input amount
 			await this.page.type('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.input.van-cell.van-field > div > div > input', amount.toString());
 
@@ -129,7 +143,7 @@ class	puppeteerExchange {
 	};
 
 	async	put(amount) {
-		if (!this.ready)
+		if (!this.ready || await this.page.url() !== 'https://www.wapex.com/#/trade')
 			return (null);
 
 		try {
@@ -137,7 +151,7 @@ class	puppeteerExchange {
 
 			// remove previous input amount
 			// unable to use $eval here to directly modify input.value for some reason
-			// await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.delete-img');
+			await this.page.click('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.delete-img');
 			// input amount
 			await this.page.type('#app > div > div.transaction-wrap.main-bg > section > section.all-amount-wrap > div.price-input > div.input-box > div.input.van-cell.van-field > div > div > input', amount.toString());
 
@@ -489,6 +503,11 @@ async function  lastUpdateChecker() {
 
 	const	exchange = new puppeteerExchange();
 	await exchange.isReady();
+
+	// while (1) {
+	// 	await exchange.call(1);
+	// 	await exchange.put(1);
+	// }
 
 	console.log('EXCHANGE READY');
 
