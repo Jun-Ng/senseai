@@ -349,7 +349,7 @@ class	puppeteerExchange {
 		return (balance);
 	};
 
-	async	pastOrdersRoutine() {
+	async	pastOrdersRoutine(firstRun = false) {
 
 		const	dayInMS = (1000 * 60 * 60 * 24);
 		const	now = new Date(Date.now());
@@ -410,7 +410,7 @@ class	puppeteerExchange {
 				this.pastOrdersRoutine();
 				return ;
 			};
-		}, nextRunIn);
+		}, firstRun ? 0 : nextRunIn);
 	
 		console.log({nextRunIn});
 	};
@@ -592,15 +592,15 @@ async function  lastUpdateChecker() {
 };
 
 (async () => {
-	const	filename = `test.csv`;
-	writeFileWithDirs(`./orderHistory/${filename}`, 'hello');
+	// const	filename = `test.csv`;
+	// writeFileWithDirs(`./orderHistory/${filename}`, 'hello');
 
 	const	exchange = new puppeteerExchange();
 
 	await exchange.isReady();
 	console.log('EXCHANGE READY');
 
-	await exchange.pastOrdersRoutine();
+	await exchange.pastOrdersRoutine(true);
 	await checkBalance(exchange);
 	await lastUpdateChecker();
 
