@@ -395,9 +395,9 @@ class	puppeteerExchange {
 				
 				const	eightHours = 1000 * 60 * 60 * 8;
 				const	plusEightNow =  new Date(Date.now() + eightHours  - (1000 * 60 * 60 * 24));
-				const	y = plusEightNow.getFullYear();
-				const	m = (plusEightNow.getMonth() + 1).toString().padStart(2, '0');
-				const	d = plusEightNow.getDate().toString().padStart(2, '0');
+				const	y = plusEightNow.getUTCFullYear();
+				const	m = (plusEightNow.getUTCMonth() + 1).toString().padStart(2, '0');
+				const	d = plusEightNow.getUTCDate().toString().padStart(2, '0');
 	
 				// console.log({plusEightNow, y, m, d});
 	
