@@ -350,7 +350,7 @@ class	puppeteerExchange {
 		return (balance);
 	};
 
-	async	pastOrdersRoutine(firstRun = false) {
+	async	pastOrdersRoutine() {
 
 		const	dayInMS = (1000 * 60 * 60 * 24);
 		const	now = new Date(Date.now());
@@ -413,7 +413,7 @@ class	puppeteerExchange {
 				this.pastOrdersRoutine();
 				return ;
 			};
-		}, firstRun ? 0 : nextRunIn);
+		}, nextRunIn);
 	
 		console.log({nextRunIn});
 	};
@@ -603,7 +603,7 @@ async function  lastUpdateChecker() {
 	await exchange.isReady();
 	console.log('EXCHANGE READY');
 
-	await exchange.pastOrdersRoutine(true);
+	await exchange.pastOrdersRoutine();
 	await checkBalance(exchange);
 	await lastUpdateChecker();
 
