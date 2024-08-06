@@ -386,6 +386,8 @@ class	puppeteerExchange {
 						);
 					});
 	
+				console.log(ytdPastOrders);
+
 				const	jsonData = jsonToCsv(ytdPastOrders);
 	
 				console.log(ytdPastOrders);
