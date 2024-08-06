@@ -1,1 +1,1 @@
-node C:\Users\Administrator\Documents\senseai\index.js
+cd ~\Documents\senseai\ ;if ($?) { node . }
