@@ -365,7 +365,7 @@ class	puppeteerExchange {
 	
 		setTimeout(async () => {
 			this.blockTrades = true;
-	
+
 			await new Promise(r => setTimeout(r, 1000 * 30));
 			try {
 				console.log({start, end});
