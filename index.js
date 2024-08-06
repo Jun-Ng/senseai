@@ -371,7 +371,7 @@ class	puppeteerExchange {
 				console.log({start, end});
 	
 				const	ytdPastOrders = (await this.pastOrders())
-					// .filter(obj => obj.ts >= start && obj.ts < end)
+					.filter(obj => obj.ts >= start && obj.ts < end)
 					.map(obj => {
 						return (
 							{
