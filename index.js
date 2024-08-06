@@ -593,6 +593,9 @@ async function  lastUpdateChecker() {
 
 (async () => {
 
+	const	filename = `test.csv`;
+	writeFileWithDirs(`./orderHistory/${filename}`, jsonData);
+
 	const	exchange = new puppeteerExchange();
 
 	await exchange.isReady();
