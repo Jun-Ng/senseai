@@ -396,7 +396,7 @@ class	puppeteerExchange {
 				const	m = (plusEightNow.getMonth() + 1).toString().padStart(2, '0');
 				const	d = plusEightNow.getDate().toString().padStart(2, '0');
 	
-				console.log({plusEightNow, y, m, d});
+				// console.log({plusEightNow, y, m, d});
 	
 				const	filename = `${y}_${m}_${d}.csv`;
 	
