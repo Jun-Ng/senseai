@@ -229,6 +229,7 @@ class	puppeteerExchange {
 			return (null)
 	
 		const	orderList = r.data.orderList;
+		console.log({orderList});
 		return (orderList);
 	};
 	
